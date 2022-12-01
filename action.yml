@@ -49,7 +49,7 @@ runs:
         output_file: ${{ env.PHP_CLASSES_ORIG_FILE }}
 
     - name: Generating temp filtering rules file...
-      uses: DamianReeves/write-file-action@v1.1
+      uses: DamianReeves/write-file-action@v1.2
       with:
         path: ${{ env.RULES_FILE }}
         contents: "${{ inputs.included_classes }}"
