@@ -36,7 +36,7 @@ runs:
       shell: bash
 
     - name: Getting PHP class list...
-      uses: impresscms-dev/generate-php-project-classes-list-file-action@v2.0.1
+      uses: impresscms-dev/generate-php-project-classes-list-file-action@v2.0.2
       with:
         output_file: ${{ env.PHP_CLASSES_ORIG_FILE }}
 
