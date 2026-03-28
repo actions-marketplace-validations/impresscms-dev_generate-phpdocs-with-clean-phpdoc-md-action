@@ -1,0 +1,44 @@
+name: Tests and Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        php:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+
+    steps:
+      - name: Checkouting code...
+        uses: actions/checkout@v6
+
+      - name: Installing PHP...
+        uses: shivammathur/setup-php@2.36.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, gd, json, mbstring, pcre, session
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.8.2
+
+      - name: Test
+        run: bats tests
