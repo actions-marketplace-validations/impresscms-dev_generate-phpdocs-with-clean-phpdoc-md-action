@@ -13,7 +13,7 @@ Imponeer\\ToArrayInterface
 EOL
 
     pushd "$COPY_DATA_PATH"
-        git clone --no-tags --quiet https://github.com/imponeer/toarray-interface.git .
+        git clone --branch v2.0.7 --depth 1 --quiet https://github.com/imponeer/toarray-interface.git .
     popd
 
     $BATS_TEST_DIRNAME/../bin/generate-config.php \

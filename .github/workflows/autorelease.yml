@@ -3,10 +3,15 @@ name: Automatic releases
 on:
   workflow_dispatch:
   schedule:
-    - cron: '5 4 * */6 *'
+    - cron: '5 4 * */3 0'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   auto-release:
+    name: Auto release
     runs-on: ubuntu-latest
     steps:
       - name: Releasing if there is something new...
