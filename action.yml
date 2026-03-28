@@ -48,7 +48,7 @@ runs:
         write-mode: overwrite
 
     - name: Filtering PHP classes list...
-      uses: impresscms-dev/filter-php-class-list-with-glob-like-rules-action@v2.0.3
+      uses: impresscms-dev/filter-php-class-list-with-glob-like-rules-action@v2.0.4
       with:
         rules_file: ${{ env.RULES_FILE }}
         input_file: ${{ env.PHP_CLASSES_ORIG_FILE }}
