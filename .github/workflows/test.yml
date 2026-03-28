@@ -14,7 +14,7 @@ jobs:
   php-matrix:
     runs-on: ubuntu-latest
     outputs:
-      versions: ${{ steps.filter-versions.outputs.versions }}
+      versions: ${{ steps.php-matrix.outputs.versions }}
 
     steps:
       - name: Checkouting code...
@@ -44,28 +44,6 @@ jobs:
           composer-json: composer.php-matrix.json
           source: php.net
 
-      - name: Filter supported CI PHP versions...
-        id: filter-versions
-        env:
-          RAW_VERSIONS: ${{ steps.php-matrix.outputs.versions }}
-        shell: bash
-        run: |
-          filtered_versions=$(
-            php -r '
-              $versions = json_decode((string) getenv("RAW_VERSIONS"), true);
-              $filtered = array_values(array_filter(
-                is_array($versions) ? $versions : [],
-                static fn($version): bool => is_string($version) && version_compare($version, "7.4", ">=")
-              ));
-              if ($filtered === []) {
-                fwrite(STDERR, "No supported CI PHP versions found.\n");
-                exit(1);
-              }
-              echo json_encode($filtered, JSON_UNESCAPED_SLASHES);
-            '
-          )
-          echo "versions=$filtered_versions" >> "$GITHUB_OUTPUT"
-
   test:
     needs:
       - php-matrix
@@ -80,7 +58,27 @@ jobs:
       - name: Checkouting code...
         uses: actions/checkout@v6
 
+      - name: Detecting Composer major...
+        id: composer-major
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        shell: bash
+        run: |
+          case "$PHP_VERSION" in
+            5.*|7.0|7.1|7.2|7.3)
+              echo "value=v1" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "value=v2" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+      - name: Skipping tests for Composer v1 runtimes...
+        if: ${{ steps.composer-major.outputs.value == 'v1' }}
+        run: echo "Skipping PHP ${{ matrix.php }} because Composer v1 is EOL and unsupported by Packagist."
+
       - name: Installing PHP...
+        if: ${{ steps.composer-major.outputs.value == 'v2' }}
         uses: shivammathur/setup-php@2.37.0
         with:
           php-version: ${{ matrix.php }}
@@ -89,9 +87,11 @@ jobs:
           tools: composer:v2
 
       - name: Setup BATS
+        if: ${{ steps.composer-major.outputs.value == 'v2' }}
         uses: mig4/setup-bats@v1
         with:
           bats-version: 1.8.2
 
       - name: Test
+        if: ${{ steps.composer-major.outputs.value == 'v2' }}
         run: bats tests
