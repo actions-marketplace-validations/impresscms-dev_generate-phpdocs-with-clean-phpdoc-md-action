@@ -4,7 +4,7 @@ setup() {
     export COPY_DATA_PATH=$(mktemp -d)
 
     pushd "$COPY_DATA_PATH"  > /dev/null
-        git clone --no-tags --quiet https://github.com/imponeer/log-data-output-decorator.git .
+        git clone --branch v1.0.5 --depth 1 --quiet https://github.com/imponeer/log-data-output-decorator.git .
         ls -la
     popd > /dev/null
 }
