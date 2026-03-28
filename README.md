@@ -34,7 +34,7 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
           
       - name: Generating documentation...
-        uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v1.0.0
+        uses: impresscms-dev/generate-phpdocs-with-clean-phpdoc-md-action@v1.1
         with:
           class_root_namespace: ImpressCMS\
           included_classes: ImpressCMS\**
