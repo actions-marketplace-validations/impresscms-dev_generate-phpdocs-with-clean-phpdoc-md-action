@@ -11,24 +11,55 @@ on:
       - ready_for_review
 
 jobs:
+  php-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.php-matrix.outputs.versions }}
+
+    steps:
+      - name: Checkouting code...
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: composer.json
+          sparse-checkout-cone-mode: false
+
+      - name: Installing PHP...
+        uses: shivammathur/setup-php@2.37.0
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Create php-matrix composer file...
+        shell: bash
+        run: |
+          package_constraint=$(php -r 'echo json_decode(file_get_contents("composer.json"), true)["require"]["clean/phpdoc-md"];')
+          php_constraint=$(composer show clean/phpdoc-md "$package_constraint" --all --format=json | php -r '$pkg = json_decode(stream_get_contents(STDIN), true); echo $pkg["requires"]["php"];')
+          php -r 'file_put_contents("composer.php-matrix.json", json_encode(["require" => ["php" => $argv[1]]], JSON_UNESCAPED_SLASHES));' "$php_constraint"
+
+      - name: Generating PHP matrix...
+        id: php-matrix
+        uses: typisttech/php-matrix-action@v2
+        with:
+          composer-json: composer.php-matrix.json
+          source: php.net
+
   test:
+    needs:
+      - php-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       max-parallel: 3
       matrix:
-        php:
-          - '7.4'
-          - '8.0'
-          - '8.1'
-          - '8.2'
+        php: ${{ fromJSON(needs.php-matrix.outputs.versions) }}
 
     steps:
       - name: Checkouting code...
         uses: actions/checkout@v6
 
       - name: Installing PHP...
-        uses: shivammathur/setup-php@2.36.0
+        uses: shivammathur/setup-php@2.37.0
         with:
           php-version: ${{ matrix.php }}
           extensions: curl, gd, json, mbstring, pcre, session
