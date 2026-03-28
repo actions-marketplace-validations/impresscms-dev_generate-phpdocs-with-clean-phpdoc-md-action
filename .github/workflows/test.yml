@@ -58,13 +58,28 @@ jobs:
       - name: Checkouting code...
         uses: actions/checkout@v6
 
+      - name: Detecting Composer major...
+        id: composer-major
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        shell: bash
+        run: |
+          case "$PHP_VERSION" in
+            5.*|7.0|7.1|7.2|7.3)
+              echo "value=v1" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "value=v2" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
       - name: Installing PHP...
         uses: shivammathur/setup-php@2.37.0
         with:
           php-version: ${{ matrix.php }}
           extensions: curl, gd, json, mbstring, pcre, session
           coverage: none
-          tools: composer:v2
+          tools: composer:${{ steps.composer-major.outputs.value }}
 
       - name: Setup BATS
         uses: mig4/setup-bats@v1
