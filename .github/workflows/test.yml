@@ -12,6 +12,7 @@ on:
 
 jobs:
   php-matrix:
+    name: Resolve PHP matrix
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.php-matrix.outputs.versions }}
@@ -45,6 +46,7 @@ jobs:
           source: php.net
 
   test:
+    name: Test (PHP ${{ matrix.php }})
     needs:
       - php-matrix
     runs-on: ubuntu-latest

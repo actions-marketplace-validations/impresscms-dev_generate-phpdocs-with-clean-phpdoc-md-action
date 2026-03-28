@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   auto-release:
+    name: Auto release
     runs-on: ubuntu-latest
     steps:
       - name: Releasing if there is something new...
