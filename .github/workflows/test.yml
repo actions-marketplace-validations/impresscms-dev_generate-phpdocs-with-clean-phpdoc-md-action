@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      max-parallel: 3
+      max-parallel: 5
       matrix:
         php: ${{ fromJSON(needs.php-matrix.outputs.versions) }}
 
