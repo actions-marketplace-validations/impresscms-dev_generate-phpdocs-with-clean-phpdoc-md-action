@@ -9,10 +9,10 @@ COMPOSER_MAJOR=$(
 )
 
 # Composer v1 does not support --ignore-platform-req=..., only --ignore-platform-reqs.
-# To avoid pulling PHP-incompatible packages, skip platform ignore flags on Composer v1.
+# Composer v2 supports granular platform ignores needed for cross-version CI fixtures.
 PLATFORM_FLAGS=""
 if [ "$COMPOSER_MAJOR" != "1" ]; then
-  PLATFORM_FLAGS="--ignore-platform-req=ext-* --ignore-platform-req=lib-*"
+  PLATFORM_FLAGS="--ignore-platform-req=php --ignore-platform-req=ext-* --ignore-platform-req=lib-*"
 fi
 
 CURRENT_CMD=$(
