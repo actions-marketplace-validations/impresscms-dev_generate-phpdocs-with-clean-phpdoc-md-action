@@ -40,7 +40,7 @@ jobs:
 
       - name: Generating PHP matrix...
         id: php-matrix
-        uses: typisttech/php-matrix-action@v2
+        uses: typisttech/php-matrix-action@v3
         with:
           composer-json: composer.php-matrix.json
           source: php.net
